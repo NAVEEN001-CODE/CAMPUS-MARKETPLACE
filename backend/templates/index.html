@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Campus Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand">Campus Marketplace</a>
+        <div>
+            <a href="/login" class="btn btn-outline-light btn-sm">Login</a>
+            <a href="/register" class="btn btn-outline-info btn-sm">Register</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h2 class="section-title">Buy & Sell Used Items Inside Campus</h2>
+    <p>
+        A secure and campus-exclusive platform designed for students and staff to buy and sell
+        used and unused items in an organized and trusted environment.
+    </p>
+
+    <h4 class="section-title mt-4">Available Items</h4>
+
+    <div class="row">
+        {% for item in items %}
+        <div class="col-md-4">
+            <div class="card mb-4 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.item_name }}</h5>
+                    <p>{{ item.description }}</p>
+                    <p><strong>Category:</strong> {{ item.category }}</p>
+                    <p><strong>Condition:</strong> {{ item.condition_item }}</p>
+                    <p class="text-info fw-bold">₹ {{ item.price }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<footer>
+    Secure • Campus Exclusive • Sustainable Marketplace
+</footer>
+
+</body>
+</html>

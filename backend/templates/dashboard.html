@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container">
+        <span class="navbar-brand">User Dashboard</span>
+        <a href="/add_item" class="btn btn-outline-info btn-sm">Post New Item</a>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h3 class="section-title">Welcome to Campus Marketplace</h3>
+    <p>
+        You can list items for sale, browse available products, and communicate securely
+        with other campus members.
+    </p>
+</div>
+
+</body>
+</html>

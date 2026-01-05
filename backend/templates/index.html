@@ -1,50 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Campus Marketplace</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
+<!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg">
     <div class="container">
         <a class="navbar-brand">Campus Marketplace</a>
         <div>
-            <a href="/login" class="btn btn-outline-light btn-sm">Login</a>
+            <a href="/login" class="btn btn-outline-light btn-sm me-2">Login</a>
             <a href="/register" class="btn btn-outline-info btn-sm">Register</a>
         </div>
     </div>
 </nav>
 
-<div class="container mt-5">
-    <h2 class="section-title">Buy & Sell Used Items Inside Campus</h2>
-    <p>
-        A secure and campus-exclusive platform designed for students and staff to buy and sell
-        used and unused items in an organized and trusted environment.
-    </p>
+<div class="container mt-4">
 
-    <h4 class="section-title mt-4">Available Items</h4>
+    <!-- HERO SECTION -->
+    <section class="hero mb-5">
+        <div class="hero-content">
+            <h1>Buy & Sell Inside Campus</h1>
+            <p>
+                Campus Marketplace is a secure and campus-exclusive web platform that allows
+                students and staff to buy and sell used and unused items such as books,
+                electronics, furniture, and accessories.  
+                The platform promotes trust, organized transactions, and sustainable reuse
+                of resources within the institution.
+            </p>
+            <a href="/register" class="btn btn-primary mt-3">
+                Start Selling & Buying
+            </a>
+        </div>
+    </section>
 
-    <div class="row">
-        {% for item in items %}
-        <div class="col-md-4">
-            <div class="card mb-4 shadow">
-                <div class="card-body">
-                    <h5 class="card-title">{{ item.item_name }}</h5>
-                    <p>{{ item.description }}</p>
-                    <p><strong>Category:</strong> {{ item.category }}</p>
-                    <p><strong>Condition:</strong> {{ item.condition_item }}</p>
-                    <p class="text-info fw-bold">₹ {{ item.price }}</p>
-                </div>
+    <!-- ABOUT / PURPOSE SECTION -->
+    <section class="mb-5">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <h4 class="text-info">Campus Exclusive</h4>
+                <p>
+                    Only verified students and staff members can access the system,
+                    ensuring authenticity and trust.
+                </p>
+            </div>
+            <div class="col-md-4">
+                <h4 class="text-info">Secure & Organized</h4>
+                <p>
+                    Structured listings, controlled communication, and reliable
+                    interactions within the campus.
+                </p>
+            </div>
+            <div class="col-md-4">
+                <h4 class="text-info">Sustainable Usage</h4>
+                <p>
+                    Encourages reuse of resources, reduces waste,
+                    and supports affordable access for students.
+                </p>
             </div>
         </div>
-        {% endfor %}
-    </div>
+    </section>
+
+    <!-- SEARCH & FILTER -->
+    <section class="mb-5">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control"
+                       placeholder="Search items (books, electronics, etc.)">
+            </div>
+            <div class="col-md-3">
+                <select name="category" class="form-control">
+                    <option value="">All Categories</option>
+                    <option value="Books">Books</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Furniture">Furniture</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Others">Others</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="number" name="price" class="form-control"
+                       placeholder="Maximum Price">
+            </div>
+            <div class="col-md-2 d-grid">
+                <button class="btn btn-primary">Filter</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- ITEMS SECTION -->
+    <section class="mb-5">
+        <h4 class="section-title mb-3">Available Items Inside Campus</h4>
+
+        <div class="row">
+            {% if items %}
+                {% for item in items %}
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ item.item_name }}</h5>
+                            <p>{{ item.description }}</p>
+                            <p><strong>Category:</strong> {{ item.category }}</p>
+                            <p><strong>Condition:</strong> {{ item.condition_item }}</p>
+                            <p class="fw-bold text-info">₹ {{ item.price }}</p>
+                            <button class="btn btn-outline-info btn-sm w-100" disabled>
+                                Contact Seller (Campus Users Only)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-dark">
+                        No items are available currently.  
+                        <strong>Be the first campus user to post an item!</strong>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
 </div>
 
-<footer>
-    Secure • Campus Exclusive • Sustainable Marketplace
+<!-- FOOTER -->
+<footer class="text-center">
+    Secure • Campus Exclusive • Sustainable Marketplace © 2026
 </footer>
 
 </body>

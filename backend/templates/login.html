@@ -1,29 +1,112 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <title>Login | Campus Marketplace</title>
+
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Dark Theme -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Client-side Validation Script -->
+    <script>
+        function validateLoginForm() {
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            if (email === "" || password === "") {
+                alert("All fields are required.");
+                return false;
+            }
+
+            const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+            if (!email.match(emailPattern)) {
+                alert("Please enter a valid email address.");
+                return false;
+            }
+
+            if (password.length < 4) {
+                alert("Password must be at least 4 characters long.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 </head>
 <body>
 
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand">Campus Marketplace</a>
+        <div>
+            <a href="/" class="btn btn-outline-light btn-sm">Home</a>
+        </div>
+    </div>
+</nav>
+
 <div class="container mt-5">
+
+    <!-- ALERT MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <div class="row justify-content-center">
-        <div class="col-md-4">
-            <div class="card p-4 shadow">
-                <h4 class="text-center section-title">User Login</h4>
+        <div class="col-md-5">
+            <div class="card shadow p-4">
+                <h3 class="section-title text-center">User Login</h3>
+
                 <p class="text-center text-muted">
-                    Login using your institutional credentials
+                    Login using your institutional credentials to access the campus marketplace
                 </p>
-                <form method="post">
-                    <input class="form-control mb-3" name="email" placeholder="Institution Email" required>
-                    <input class="form-control mb-3" type="password" name="password" placeholder="Password" required>
-                    <button class="btn btn-primary w-100">Login</button>
+
+                <form method="post" onsubmit="return validateLoginForm();">
+
+                    <div class="mb-3">
+                        <label class="form-label">Institution Email</label>
+                        <input type="email" id="email" name="email"
+                               class="form-control"
+                               placeholder="example@college.edu"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="password" name="password"
+                               class="form-control"
+                               placeholder="Enter your password"
+                               required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-2">
+                        Login
+                    </button>
                 </form>
+
+                <hr>
+
+                <p class="text-center">
+                    New to Campus Marketplace?
+                    <a href="/register" class="text-info">Register here</a>
+                </p>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

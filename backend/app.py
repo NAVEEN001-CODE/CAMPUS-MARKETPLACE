@@ -47,20 +47,29 @@ def register():
         return redirect("/login")
     return render_template("register.html")
 
-@app.route("/login", methods=["GET","POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
+        email = request.form["email"]
+        password = request.form["password"]
+
         db = get_db_connection()
         cursor = db.cursor(dictionary=True)
         cursor.execute(
             "SELECT * FROM users WHERE email=%s AND password=%s",
-            (request.form["email"], request.form["password"])
+            (email, password)
         )
         user = cursor.fetchone()
+
         if user:
             session["user_id"] = user["id"]
+            flash("Login successful. Welcome to Campus Marketplace!", "success")
             return redirect("/dashboard")
+        else:
+            flash("Invalid email or password. Please try again.", "danger")
+
     return render_template("login.html")
+
 
 @app.route("/dashboard")
 def dashboard():

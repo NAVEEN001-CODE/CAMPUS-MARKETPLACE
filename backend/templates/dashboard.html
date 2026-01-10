@@ -1,26 +1,118 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Dashboard</title>
+    <meta charset="UTF-8">
+    <title>Dashboard | Campus Marketplace</title>
+
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Dark Theme -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-<nav class="navbar">
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
     <div class="container">
-        <span class="navbar-brand">User Dashboard</span>
-        <a href="/add_item" class="btn btn-outline-info btn-sm">Post New Item</a>
+        <a class="navbar-brand">Campus Marketplace</a>
+
+        <div>
+            <a href="/add_item" class="btn btn-outline-info btn-sm me-2">
+                Sell Item
+            </a>
+            <a href="/items" class="btn btn-outline-light btn-sm me-2">
+                Browse Items
+            </a>
+            <a href="/profile" class="btn btn-outline-secondary btn-sm me-2">
+                Profile
+            </a>
+            <a href="/logout"
+   class="btn btn-outline-danger btn-sm"
+   onclick="return confirm('Are you sure you want to logout?');">
+   Logout
+</a>
+
+        </div>
     </div>
 </nav>
 
 <div class="container mt-5">
-    <h3 class="section-title">Welcome to Campus Marketplace</h3>
-    <p>
-        You can list items for sale, browse available products, and communicate securely
-        with other campus members.
-    </p>
+
+    <!-- WELCOME -->
+    <section class="mb-5 text-center">
+        <h2 class="section-title">Welcome to Your Dashboard</h2>
+        <p class="mt-3 text-light">
+            This is your personal control panel in the campus-exclusive marketplace.
+            From here, you can sell items, browse available products,
+            and manage your account securely.
+        </p>
+    </section>
+
+    <!-- ACTION CARDS -->
+    <section class="mb-5">
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="dashboard-card text-center">
+                    <h4>Sell an Item</h4>
+                    <p class="mt-3">
+                        Post used or unused items such as books, electronics,
+                        furniture, or accessories with complete details.
+                    </p>
+                    <a href="/add_item" class="btn btn-primary mt-3">
+                        Sell Item
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="dashboard-card text-center">
+                    <h4>Browse Items</h4>
+                    <p class="mt-3">
+                        View items listed by other campus users using
+                        search and filter options.
+                    </p>
+                    <a href="/items" class="btn btn-outline-info mt-3">
+                        Browse Marketplace
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="dashboard-card text-center">
+                    <h4>Secure Interaction</h4>
+                    <p class="mt-3">
+                        Ensures trusted and safe peer-to-peer interaction
+                        inside the campus environment.
+                    </p>
+                    <button class="btn btn-outline-secondary mt-3" disabled>
+                        Messaging (Coming Soon)
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- INFO -->
+    <section class="mb-5">
+        <div class="dashboard-info-card">
+            <h4 class="text-info mb-3">Why Campus Marketplace?</h4>
+            <ul>
+                <li>Campus-only access using authenticated users</li>
+                <li>Organized buying and selling of used items</li>
+                <li>Reduces dependency on informal social media groups</li>
+                <li>Encourages sustainability and reuse of resources</li>
+            </ul>
+        </div>
+    </section>
+
 </div>
+
+<footer class="text-center">
+    Secure • Campus Exclusive • Sustainable Marketplace © 2026
+</footer>
 
 </body>
 </html>

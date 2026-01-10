@@ -1,30 +1,123 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Register</title>
+    <meta charset="UTF-8">
+    <title>Register | Campus Marketplace</title>
+
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Dark Theme -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Client-side Validation -->
+    <script>
+        function validateRegisterForm() {
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            if (name === "" || email === "" || password === "") {
+                alert("All fields are required.");
+                return false;
+            }
+
+            const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,}$/;
+            if (!email.match(emailPattern)) {
+                alert("Please enter a valid institutional email address.");
+                return false;
+            }
+
+            if (password.length < 4) {
+                alert("Password must be at least 4 characters long.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 </head>
 <body>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card p-4 shadow">
-                <h4 class="section-title text-center">Campus User Registration</h4>
-                <p class="text-muted text-center">
-                    Only students and staff with institutional email can register
-                </p>
-                <form method="post">
-                    <input class="form-control mb-3" name="name" placeholder="Full Name" required>
-                    <input class="form-control mb-3" name="email" placeholder="Institution Email ID" required>
-                    <input class="form-control mb-3" type="password" name="password" placeholder="Password" required>
-                    <button class="btn btn-primary w-100">Register</button>
-                </form>
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand">Campus Marketplace</a>
+        <a href="/" class="btn btn-outline-light btn-sm">Home</a>
+    </div>
+</nav>
+
+<!-- REGISTER SECTION -->
+<div class="auth-container">
+    <div class="auth-card">
+
+        <!-- ALERT MESSAGES -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <h2 class="text-center mb-2">Campus User Registration</h2>
+        <p class="text-center mb-4">
+            Register using your institutional email to access the campus-exclusive marketplace
+        </p>
+
+        <form method="post" onsubmit="return validateRegisterForm();">
+
+            <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                <input type="text"
+                       id="name"
+                       name="name"
+                       class="form-control"
+                       placeholder="Enter your full name"
+                       required>
             </div>
+
+            <div class="mb-3">
+                <label class="form-label">Institution Email</label>
+                <input type="email"
+                       id="email"
+                       name="email"
+                       class="form-control"
+                       placeholder="example@college.edu"
+                       required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Password</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       class="form-control"
+                       placeholder="Create a password"
+                       required>
+                <small class="text-muted">
+                    Password must be at least 4 characters long
+                </small>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Register
+            </button>
+        </form>
+
+        <div class="text-center mt-4 auth-footer-text">
+            Already have an account?
+            <a href="/login" class="text-info fw-semibold">Login here</a>
         </div>
+
     </div>
 </div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

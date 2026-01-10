@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile | Campus Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="container">
+        <a class="navbar-brand">Campus Marketplace</a>
+        <div>
+            <a href="/dashboard" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+            <a href="/add_item" class="btn btn-outline-info btn-sm me-2">Sell Item</a>
+            <a href="/logout" class="btn btn-outline-danger btn-sm">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+    <!-- PROFILE INFO -->
+    <div class="profile-card mb-5">
+        <h3 class="text-info mb-4">My Profile</h3>
+
+        <div class="row align-items-center">
+            <div class="col-md-4 text-center">
+                {% if user.profile_pic %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ user.profile_pic) }}"
+                         class="profile-img mb-3">
+                {% else %}
+                    <img src="https://via.placeholder.com/160"
+                         class="profile-img mb-3">
+                {% endif %}
+            </div>
+
+            <div class="col-md-8">
+                <p class="profile-label">Name</p>
+                <p class="profile-value">{{ user.name }}</p>
+
+                <p class="profile-label">Email</p>
+                <p class="profile-value">{{ user.email }}</p>
+
+                <p class="profile-label">Phone</p>
+                <p class="profile-value">{{ user.phone or "Not added" }}</p>
+
+                <p class="profile-label">Department</p>
+                <p class="profile-value">{{ user.department or "Not added" }}</p>
+
+                <p class="profile-label">Semester</p>
+                <p class="profile-value">{{ user.semester or "Not added" }}</p>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- UPDATE PROFILE -->
+        <h5 class="text-info mb-3">Update Profile</h5>
+
+        <form method="post" enctype="multipart/form-data">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" name="phone" class="form-control"
+                           value="{{ user.phone or '' }}">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Department</label>
+                    <input type="text" name="department" class="form-control"
+                           value="{{ user.department or '' }}">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Semester</label>
+                    <input type="text" name="semester" class="form-control"
+                           value="{{ user.semester or '' }}">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Profile Picture</label>
+                    <input type="file" name="profile_pic" class="form-control">
+                </div>
+            </div>
+
+            <button class="btn btn-primary mt-2">
+                Save / Update Profile
+            </button>
+        </form>
+    </div>
+
+    <!-- MY POSTED ITEMS -->
+    <div class="profile-card">
+        <h3 class="text-info mb-4">My Posted Items</h3>
+
+        {% if my_items %}
+            <div class="row">
+                {% for item in my_items %}
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow text-center">
+
+                        {% if item.image %}
+                            <img src="{{ url_for('static', filename='uploads/' ~ item.image) }}"
+                                 class="img-fluid rounded-top"
+                                 style="max-height:160px; object-fit:cover;">
+                        {% endif %}
+
+                        <div class="card-body">
+                            <h5>{{ item.item_name }}</h5>
+                            <p>{{ item.description }}</p>
+                            <p class="text-muted">{{ item.category }} • {{ item.condition_item }}</p>
+                            <p class="fw-bold text-info">₹ {{ item.price }}</p>
+
+                            <a href="/edit_item/{{ item.id }}"
+                               class="btn btn-outline-info btn-sm me-2">
+                                Edit
+                            </a>
+
+                            <a href="/delete_item/{{ item.id }}"
+                               class="btn btn-outline-danger btn-sm"
+                               onclick="return confirm('Are you sure you want to delete this item?');">
+                                Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+    <div class="empty-state">
+        <h5>No Items Posted Yet</h5>
+        <p>
+            You haven’t posted any items for sale yet.
+            Start selling unused books, electronics, or accessories inside the campus.
+        </p>
+        <a href="/add_item" class="btn btn-primary mt-3">
+            Sell Your First Item
+        </a>
+    </div>
+{% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

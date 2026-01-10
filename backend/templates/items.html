@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browse Items | Campus Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="container">
+        <a class="navbar-brand">Campus Marketplace</a>
+        <div>
+            <a href="/dashboard" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+            <a href="/profile" class="btn btn-outline-secondary btn-sm me-2">Profile</a>
+            <a href="/logout"
+               class="btn btn-outline-danger btn-sm"
+               onclick="return confirm('Are you sure you want to logout?');">
+               Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+    <!-- PAGE TITLE -->
+    <h2 class="section-title mb-4">Browse Items Inside Campus</h2>
+
+    <!-- SEARCH & FILTER -->
+    <form method="get" class="row g-3 mb-5">
+
+        <div class="col-md-4">
+            <input type="text"
+                   name="search"
+                   class="form-control"
+                   placeholder="Search items (books, electronics...)"
+                   value="{{ request.args.get('search','') }}">
+        </div>
+
+        <div class="col-md-3">
+            <select name="category" class="form-control">
+                <option value="">All Categories</option>
+                <option value="Books">Books</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Accessories">Accessories</option>
+                <option value="Others">Others</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <input type="number"
+                   name="price"
+                   class="form-control"
+                   placeholder="Max Price"
+                   value="{{ request.args.get('price','') }}">
+        </div>
+
+        <div class="col-md-2 d-grid">
+            <button class="btn btn-primary">Filter</button>
+        </div>
+    </form>
+
+    <!-- ITEMS GRID -->
+    {% if items %}
+        <div class="row">
+            {% for item in items %}
+            <div class="col-md-4">
+                <div class="card mb-4 shadow text-center">
+
+                    {% if item.image %}
+                        <img src="{{ url_for('static', filename='uploads/' ~ item.image) }}"
+                             class="img-fluid rounded-top"
+                             style="height:180px; object-fit:cover;">
+                    {% endif %}
+
+                    <div class="card-body">
+                        <h5>{{ item.item_name }}</h5>
+                        <p>{{ item.description }}</p>
+
+                        <p class="text-muted">
+                            {{ item.category }} • {{ item.condition_item }}
+                        </p>
+
+                        <p class="fw-bold text-info">₹ {{ item.price }}</p>
+
+                        <button class="btn btn-outline-info btn-sm w-100" disabled>
+                            Contact Seller (Campus Only)
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- EMPTY STATE -->
+        <div class="empty-state">
+            <h5>No Items Found</h5>
+            <p>
+                No items match your search or filter criteria.
+                Try adjusting filters or check back later.
+            </p>
+        </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

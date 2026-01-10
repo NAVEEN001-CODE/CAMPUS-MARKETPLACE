@@ -10,25 +10,25 @@
     <!-- Custom Dark Theme -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-    <!-- Client-side Validation Script -->
+    <!-- Client-side Validation -->
     <script>
         function validateLoginForm() {
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value.trim();
 
             if (email === "" || password === "") {
-                alert("All fields are required.");
+                alert("Please fill in all required fields.");
                 return false;
             }
 
-            const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+            const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,}$/;
             if (!email.match(emailPattern)) {
-                alert("Please enter a valid email address.");
+                alert("Please enter a valid institutional email address.");
                 return false;
             }
 
             if (password.length < 4) {
-                alert("Password must be at least 4 characters long.");
+                alert("Password must contain at least 4 characters.");
                 return false;
             }
 
@@ -38,70 +38,67 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
+<!-- NAVBAR (SAME STYLE AS HOMEPAGE) -->
 <nav class="navbar navbar-expand-lg">
     <div class="container">
         <a class="navbar-brand">Campus Marketplace</a>
-        <div>
-            <a href="/" class="btn btn-outline-light btn-sm">Home</a>
-        </div>
+        <a href="/" class="btn btn-outline-light btn-sm">Home</a>
     </div>
 </nav>
 
-<div class="container mt-5">
+<!-- LOGIN SECTION -->
+<div class="auth-container">
+    <div class="auth-card">
 
-    <!-- ALERT MESSAGES -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible fade show">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
+        <!-- ALERTS -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
 
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow p-4">
-                <h3 class="section-title text-center">User Login</h3>
+        <h2 class="text-center mb-2">User Login</h2>
+        <p class="text-center mb-4">
+            Login using your institutional credentials to access the campus marketplace
+        </p>
 
-                <p class="text-center text-muted">
-                    Login using your institutional credentials to access the campus marketplace
-                </p>
+        <form method="post" onsubmit="return validateLoginForm();">
 
-                <form method="post" onsubmit="return validateLoginForm();">
-
-                    <div class="mb-3">
-                        <label class="form-label">Institution Email</label>
-                        <input type="email" id="email" name="email"
-                               class="form-control"
-                               placeholder="example@college.edu"
-                               required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" id="password" name="password"
-                               class="form-control"
-                               placeholder="Enter your password"
-                               required>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 mt-2">
-                        Login
-                    </button>
-                </form>
-
-                <hr>
-
-                <p class="text-center">
-                    New to Campus Marketplace?
-                    <a href="/register" class="text-info">Register here</a>
-                </p>
+            <div class="mb-3">
+                <label class="form-label">Institution Email</label>
+                <input type="email"
+                       id="email"
+                       name="email"
+                       class="form-control"
+                       placeholder="example@college.edu"
+                       required>
             </div>
+
+            <div class="mb-4">
+                <label class="form-label">Password</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       class="form-control"
+                       placeholder="Enter your password"
+                       required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Login
+            </button>
+        </form>
+
+        <div class="text-center mt-4 auth-footer-text">
+            New to Campus Marketplace?
+            <a href="/register" class="text-info fw-semibold">Register here</a>
         </div>
+
     </div>
 </div>
 

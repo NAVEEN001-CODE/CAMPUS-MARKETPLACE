@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% block title %}Manage Products — Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-box-seam-fill text-primary me-2"></i>Product Management</h2>
+            <p class="text-muted mb-0">View and manage all product listings</p>
+        </div>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Search</label>
+                    <input type="text" name="search" class="form-control" placeholder="Search by title..."
+                        value="{{ search }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-semibold">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="available" {{ 'selected' if status_filter=='available' }}>Available</option>
+                        <option value="sold" {{ 'selected' if status_filter=='sold' }}>Sold</option>
+                        <option value="removed" {{ 'selected' if status_filter=='removed' }}>Removed</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-semibold">Category</label>
+                    <select name="category" class="form-select">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {{ 'selected' if category_filter==cat.id|string }}>{{ cat.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> Filter</button>
+                </div>
+                <div class="col-md-2">
+                    <a href="{{ url_for('admin.manage_products') }}" class="btn btn-outline-secondary w-100">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Image</th>
+                            <th>Title</th>
+                            <th>Seller</th>
+                            <th>Price</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Trust</th>
+                            <th>AI Condition</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in products %}
+                        <tr>
+                            <td>{{ p.id }}</td>
+                            <td>
+                                {% if p.image_filename %}
+                                <img src="{{ url_for('static', filename='uploads/' + p.image_filename) }}" alt=""
+                                    class="rounded" style="width:45px; height:45px; object-fit:cover;">
+                                {% else %}
+                                <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                    style="width:45px;height:45px;">
+                                    <i class="bi bi-image text-muted"></i>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('product_detail', product_id=p.id) }}"
+                                    class="text-decoration-none fw-semibold">
+                                    {{ p.title[:25] }}{% if p.title|length > 25 %}...{% endif %}
+                                </a>
+                            </td>
+                            <td><small>{{ p.seller_name }}</small></td>
+                            <td class="fw-bold text-success">₹{{ p.price }}</td>
+                            <td><small>{{ p.category_name or '—' }}</small></td>
+                            <td>
+                                {% if p.status == 'available' %}
+                                <span class="badge bg-success">Available</span>
+                                {% elif p.status == 'sold' %}
+                                <span class="badge bg-info">Sold</span>
+                                {% else %}
+                                <span class="badge bg-danger">Removed</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if p.trust_score %}
+                                <span
+                                    class="badge bg-{{ 'success' if p.trust_score >= 70 else ('warning text-dark' if p.trust_score >= 40 else 'danger') }}">
+                                    {{ p.trust_score }}%
+                                </span>
+                                {% else %}
+                                <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if p.condition_label %}
+                                <span
+                                    class="badge bg-{{ 'success' if p.condition_label == 'Good' else ('warning text-dark' if p.condition_label == 'Moderate' else 'danger') }}">
+                                    {{ p.condition_label }}
+                                </span>
+                                {% if p.is_blurry %}
+                                <span class="badge bg-danger ms-1" title="Blurry image"><i
+                                        class="bi bi-eye-slash"></i></span>
+                                {% endif %}
+                                {% else %}
+                                <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <!-- Toggle Status -->
+                                    <form method="POST"
+                                        action="{{ url_for('admin.toggle_product_status', product_id=p.id) }}"
+                                        class="d-inline">
+                                        {% if p.status == 'available' %}
+                                        <button type="submit" class="btn btn-outline-warning btn-sm"
+                                            title="Remove listing">
+                                            <i class="bi bi-eye-slash"></i>
+                                        </button>
+                                        {% else %}
+                                        <button type="submit" class="btn btn-outline-success btn-sm"
+                                            title="Restore listing">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        {% endif %}
+                                    </form>
+                                    <!-- Delete -->
+                                    <form method="POST" action="{{ url_for('admin.remove_product', product_id=p.id) }}"
+                                        class="d-inline" onsubmit="return confirm('Permanently delete this product?')">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm"
+                                            title="Delete permanently">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="10" class="text-center text-muted py-4">
+                                <i class="bi bi-box-seam fs-1 d-block mb-2 opacity-50"></i>
+                                No products found
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-transparent">
+            <small class="text-muted">Showing {{ products|length }} product(s)</small>
+        </div>
+    </div>
+</div>
+{% endblock %}

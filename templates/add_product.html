@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% block title %}Sell an Item — Campus Marketplace{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5">
+                    <h3 class="fw-bold mb-1">
+                        <i class="bi bi-plus-circle text-primary me-2"></i>List a New Item
+                    </h3>
+                    <p class="text-muted mb-4">Upload your product image for AI-powered quality analysis</p>
+
+                    <form method="POST" action="{{ url_for('add_product') }}" enctype="multipart/form-data"
+                        id="productForm">
+                        <div class="row g-3">
+                            <!-- Title -->
+                            <div class="col-12">
+                                <label for="title" class="form-label fw-medium">Product Title *</label>
+                                <input type="text" class="form-control form-control-lg" id="title" name="title" required
+                                    maxlength="200" placeholder="e.g. Data Structures Textbook — 3rd Edition">
+                            </div>
+
+                            <!-- Category & Condition -->
+                            <div class="col-md-6">
+                                <label for="category_id" class="form-label fw-medium">Category</label>
+                                <select class="form-select form-select-lg" id="category_id" name="category_id">
+                                    <option value="">Select category</option>
+                                    {% for cat in categories %}
+                                    <option value="{{ cat.id }}">{{ cat.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="item_condition" class="form-label fw-medium">Condition</label>
+                                <select class="form-select form-select-lg" id="item_condition" name="item_condition">
+                                    <option value="New">New (Unused)</option>
+                                    <option value="Like New">Like New</option>
+                                    <option value="Used" selected>Used</option>
+                                    <option value="Heavily Used">Heavily Used</option>
+                                </select>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="col-md-4">
+                                <label for="price" class="form-label fw-medium">Price (₹) *</label>
+                                <input type="number" class="form-control form-control-lg" id="price" name="price"
+                                    required min="1" step="1" placeholder="500">
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-12">
+                                <label for="description" class="form-label fw-medium">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="4"
+                                    placeholder="Describe your item — condition, age, reason for selling, etc."></textarea>
+                                <small class="text-muted">A detailed description improves your AI trust score.</small>
+                            </div>
+
+                            <!-- Image Upload -->
+                            <div class="col-12">
+                                <label for="image" class="form-label fw-medium">Product Image *</label>
+                                <input type="file" class="form-control form-control-lg" id="image" name="image" required
+                                    accept=".jpg,.jpeg,.png,.gif,.webp">
+                            </div>
+
+                            <!-- Image Preview -->
+                            <div class="col-12" id="previewSection" style="display:none;">
+                                <div class="row g-3">
+                                    <div class="col-md-5">
+                                        <img id="imagePreview" src="" class="img-fluid rounded shadow-sm" alt="Preview">
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div id="aiAnalysisPanel" style="display:none;">
+                                            <h6 class="fw-bold mb-3">
+                                                <i class="bi bi-cpu text-primary me-2"></i>AI Analysis Results
+                                            </h6>
+                                            <div id="aiResults">
+                                                <!-- Populated by JS -->
+                                            </div>
+                                        </div>
+                                        <div id="aiLoading" style="display:none;">
+                                            <div class="text-center py-4">
+                                                <div class="spinner-border text-primary mb-3" role="status"></div>
+                                                <p class="text-muted">Analyzing image with AI...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit -->
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg w-100" id="submitBtn">
+                                    <i class="bi bi-upload me-2"></i>List Product
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const imageInput = document.getElementById('image');
+        const previewSection = document.getElementById('previewSection');
+        const imagePreview = document.getElementById('imagePreview');
+        const aiLoading = document.getElementById('aiLoading');
+        const aiPanel = document.getElementById('aiAnalysisPanel');
+        const aiResults = document.getElementById('aiResults');
+
+        imageInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                imagePreview.src = ev.target.result;
+                previewSection.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+
+            // Send to AI analysis API
+            aiLoading.style.display = 'block';
+            aiPanel.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('description', document.getElementById('description').value);
+
+            fetch('/api/analyze_image', {
+                method: 'POST',
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+                    aiLoading.style.display = 'none';
+                    if (data.error) {
+                        aiResults.innerHTML = `<div class="alert alert-warning">${data.error}</div>`;
+                        aiPanel.style.display = 'block';
+                        return;
+                    }
+
+                    let condColor = data.condition_label === 'Good' ? 'success' :
+                        data.condition_label === 'Moderate' ? 'warning' : 'danger';
+
+                    aiResults.innerHTML = `
+                <div class="mb-3">
+                    <span class="badge bg-${data.trust_color} fs-6 px-3 py-2">
+                        ${data.trust_icon} Trust Score: ${data.trust_score}/100
+                    </span>
+                </div>
+                <div class="mb-2">
+                    <strong>Image Quality:</strong>
+                    <span class="badge bg-${data.is_blurry ? 'danger' : 'success'}">
+                        ${data.is_blurry ? '⚠️ Blurry' : '✅ Clear'}
+                    </span>
+                    <small class="text-muted ms-2">(Score: ${data.blur_score})</small>
+                </div>
+                <div class="mb-2">
+                    <strong>Condition:</strong>
+                    <span class="badge bg-${condColor}">
+                        ${data.condition_label}
+                    </span>
+                    <small class="text-muted ms-2">(${(data.condition_confidence * 100).toFixed(0)}% confidence)</small>
+                </div>
+                <div class="mt-3 p-3 rounded" style="background:var(--bs-tertiary-bg);">
+                    <small class="fw-medium">AI Feedback:</small><br>
+                    <small class="text-muted">${data.feedback_text.replace(/\n/g, '<br>')}</small>
+                </div>
+            `;
+                    aiPanel.style.display = 'block';
+                })
+                .catch(err => {
+                    aiLoading.style.display = 'none';
+                    aiResults.innerHTML = '<div class="alert alert-warning">AI analysis unavailable.</div>';
+                    aiPanel.style.display = 'block';
+                });
+        });
+    });
+</script>
+{% endblock %}

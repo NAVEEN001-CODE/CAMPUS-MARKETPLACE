@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% block title %}Campus Marketplace — Buy & Sell on Campus{% endblock %}
+
+{% block content %}
+<!-- ─── Hero Section ─────────────────────────────────────── -->
+{% if not session.get('user_id') %}
+<section class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3">
+            Buy & Sell on <span class="text-gradient">Campus</span>
+        </h1>
+        <p class="lead mb-4 mx-auto" style="max-width:600px;">
+            A secure, AI-powered marketplace exclusively for students and staff.
+            List items, browse deals, and trade with trust.
+        </p>
+        <div class="d-flex gap-3 justify-content-center">
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-4">
+                <i class="bi bi-rocket-takeoff me-2"></i>Get Started
+            </a>
+            <a href="#products" class="btn btn-outline-secondary btn-lg px-4">
+                <i class="bi bi-grid me-2"></i>Browse Items
+            </a>
+        </div>
+        <div class="hero-stats mt-5">
+            <div class="stat-item">
+                <i class="bi bi-shield-check"></i>
+                <span>AI Trust Scoring</span>
+            </div>
+            <div class="stat-item">
+                <i class="bi bi-lock"></i>
+                <span>Campus Verified</span>
+            </div>
+            <div class="stat-item">
+                <i class="bi bi-chat-dots"></i>
+                <span>Safe Messaging</span>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ─── Search & Filters ────────────────────────────────── -->
+<section class="py-4" id="products">
+    <div class="container">
+        <form method="GET" action="{{ url_for('index') }}" class="search-bar">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" name="search" class="form-control" placeholder="Search products..."
+                            value="{{ search }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="category" class="form-select form-select-lg">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {{ 'selected' if selected_category|string==cat.id|string }}>
+                            {{ cat.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="sort" class="form-select form-select-lg">
+                        <option value="newest" {{ 'selected' if sort_by=='newest' }}>Newest</option>
+                        <option value="price_low" {{ 'selected' if sort_by=='price_low' }}>Price: Low</option>
+                        <option value="price_high" {{ 'selected' if sort_by=='price_high' }}>Price: High</option>
+                        <option value="trust" {{ 'selected' if sort_by=='trust' }}>Trust Score</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="bi bi-funnel me-1"></i>Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- ─── Product Grid ────────────────────────────────────── -->
+<section class="pb-5">
+    <div class="container">
+        {% if products %}
+        <div class="row g-4">
+            {% for product in products %}
+            <div class="col-sm-6 col-md-4 col-lg-3">
+                <div class="product-card card h-100">
+                    <div class="product-image-wrapper">
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}">
+                            <img src="{{ url_for('static', filename='uploads/' + product.image_filename) }}"
+                                class="card-img-top product-image" alt="{{ product.title }}" loading="lazy">
+                        </a>
+                        {% if product.trust_score is not none %}
+                        {% set tl = get_trust_label(product.trust_score) %}
+                        <span class="trust-badge badge bg-{{ tl.color }}">
+                            {{ tl.icon }} {{ product.trust_score }}%
+                        </span>
+                        {% endif %}
+                        {% if product.condition_label %}
+                        <span class="condition-badge badge
+                            {% if product.condition_label == 'Good' %}bg-success
+                            {% elif product.condition_label == 'Moderate' %}bg-warning text-dark
+                            {% else %}bg-danger{% endif %}">
+                            {{ product.condition_label }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title fw-semibold mb-1">
+                            <a href="{{ url_for('product_detail', product_id=product.id) }}"
+                                class="text-decoration-none stretched-link">
+                                {{ product.title|truncate(40) }}
+                            </a>
+                        </h6>
+                        <p class="text-muted small mb-2">
+                            <i class="bi bi-{{ product.category_icon or 'tag' }} me-1"></i>
+                            {{ product.category_name or 'Uncategorized' }}
+                        </p>
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <span class="price-tag">₹{{ "%.0f"|format(product.price) }}</span>
+                            <small class="text-muted">
+                                <i class="bi bi-person me-1"></i>{{ product.seller_name|truncate(15) }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5 empty-state">
+            <i class="bi bi-inbox display-1 text-muted"></i>
+            <h4 class="mt-3">No products found</h4>
+            <p class="text-muted">Try adjusting your search or filters.</p>
+            {% if session.get('user_id') %}
+            <a href="{{ url_for('add_product') }}" class="btn btn-primary mt-2">
+                <i class="bi bi-plus-circle me-2"></i>List Your First Item
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

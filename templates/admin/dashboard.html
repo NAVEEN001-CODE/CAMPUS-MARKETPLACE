@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard — Campus Marketplace{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-shield-lock-fill text-primary me-2"></i>Admin Dashboard</h2>
+            <p class="text-muted mb-0">Platform overview and management</p>
+        </div>
+        <div class="btn-group">
+            <a href="{{ url_for('admin.manage_users') }}" class="btn btn-outline-primary btn-sm"><i
+                    class="bi bi-people"></i> Users</a>
+            <a href="{{ url_for('admin.manage_products') }}" class="btn btn-outline-primary btn-sm"><i
+                    class="bi bi-box-seam"></i> Products</a>
+            <a href="{{ url_for('admin.manage_categories') }}" class="btn btn-outline-primary btn-sm"><i
+                    class="bi bi-tags"></i> Categories</a>
+            <a href="{{ url_for('admin.ai_analytics') }}" class="btn btn-outline-primary btn-sm"><i
+                    class="bi bi-robot"></i> AI Analytics</a>
+        </div>
+    </div>
+
+    <!-- Stats Cards Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                <div class="card-body text-white">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="mb-1 opacity-75 small">Total Users</p>
+                            <h3 class="fw-bold mb-0">{{ stats.total_users }}</h3>
+                        </div>
+                        <i class="bi bi-people-fill fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
+                <div class="card-body text-white">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="mb-1 opacity-75 small">Active Listings</p>
+                            <h3 class="fw-bold mb-0">{{ stats.active_products }}</h3>
+                        </div>
+                        <i class="bi bi-box-seam-fill fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #fc5c7d, #6a82fb);">
+                <div class="card-body text-white">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="mb-1 opacity-75 small">Items Sold</p>
+                            <h3 class="fw-bold mb-0">{{ stats.sold_products }}</h3>
+                        </div>
+                        <i class="bi bi-bag-check-fill fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                <div class="card-body text-white">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="mb-1 opacity-75 small">Avg Trust Score</p>
+                            <h3 class="fw-bold mb-0">{{ stats.avg_trust_score }}%</h3>
+                        </div>
+                        <i class="bi bi-shield-check fs-1 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Row Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-chat-dots-fill text-info fs-2"></i>
+                    <h4 class="fw-bold mt-2 mb-0">{{ stats.total_messages }}</h4>
+                    <small class="text-muted">Messages Sent</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-tags-fill text-warning fs-2"></i>
+                    <h4 class="fw-bold mt-2 mb-0">{{ stats.total_categories }}</h4>
+                    <small class="text-muted">Categories</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-robot text-success fs-2"></i>
+                    <h4 class="fw-bold mt-2 mb-0">{{ stats.ai_analyzed }}</h4>
+                    <small class="text-muted">AI Analyzed</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Users -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-people me-2"></i>Recent Users</h5>
+                    <a href="{{ url_for('admin.manage_users') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Joined</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in recent_users %}
+                                <tr>
+                                    <td class="fw-semibold">{{ user.full_name }}</td>
+                                    <td><small>{{ user.email }}</small></td>
+                                    <td>
+                                        <span class="badge bg-{{ 'primary' if user.role == 'staff' else 'secondary' }}">
+                                            {{ user.role|capitalize }}
+                                        </span>
+                                    </td>
+                                    <td><small>{{ user.created_at.strftime('%d %b %Y') if user.created_at else 'N/A'
+                                            }}</small></td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-3">No users yet</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Products -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-box-seam me-2"></i>Recent Products</h5>
+                    <a href="{{ url_for('admin.manage_products') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Seller</th>
+                                    <th>Price</th>
+                                    <th>Trust</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in recent_products %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('product_detail', product_id=product.id) }}"
+                                            class="text-decoration-none fw-semibold">
+                                            {{ product.title[:30] }}{% if product.title|length > 30 %}...{% endif %}
+                                        </a>
+                                    </td>
+                                    <td><small>{{ product.seller_name }}</small></td>
+                                    <td class="fw-bold text-success">₹{{ product.price }}</td>
+                                    <td>
+                                        {% if product.trust_score %}
+                                        <span
+                                            class="badge bg-{{ 'success' if product.trust_score >= 70 else ('warning' if product.trust_score >= 40 else 'danger') }}">
+                                            {{ product.trust_score }}%
+                                        </span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-3">No products yet</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Distribution -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Category Distribution</h5>
+                </div>
+                <div class="card-body">
+                    {% for cat in category_stats %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="small fw-semibold">{{ cat.name }}</span>
+                            <span class="small text-muted">{{ cat.product_count }} items</span>
+                        </div>
+                        {% set max_count = category_stats|map(attribute='product_count')|max if category_stats else 1 %}
+                        {% set pct = (cat.product_count / max_count * 100) if max_count > 0 else 0 %}
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-primary" style="width: {{ pct }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Condition Distribution -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0"><i class="bi bi-robot me-2"></i>AI Condition Analysis</h5>
+                </div>
+                <div class="card-body">
+                    {% for cond in condition_stats %}
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center">
+                            <span
+                                class="badge bg-{{ 'success' if cond.condition_label == 'Good' else ('warning' if cond.condition_label == 'Moderate' else 'danger') }} me-2">
+                                {{ cond.condition_label }}
+                            </span>
+                        </div>
+                        <span class="fw-bold">{{ cond.cnt }} products</span>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">No AI analysis data yet</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
